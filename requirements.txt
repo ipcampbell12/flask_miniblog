@@ -5,4 +5,5 @@ python-dotenv
 SQLAlchemy
 gunicorn
 psycopg2-binary
+Flask-Smorest
 requests

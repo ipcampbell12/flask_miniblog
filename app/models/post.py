@@ -8,7 +8,9 @@ class PostModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80), nullable=False, primary_key=True)
     text = db.Column(db.String(200), nullable=False)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow())
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     comments = db.Relationship(
         'CommentModel', back_populates='post', lazy="dynamic", cascade="all,celete")
     tags = db.Relationship(
