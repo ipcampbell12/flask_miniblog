@@ -14,9 +14,9 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app)
 
-    from .app.resources import user_bp, post_bp, comment_bp
-    app.register_blueprint(user_bp)
-    app.register_blueprint(post_bp)
-    app.register_blueprint(comment_bp)
+    from .app.resources import tag_bp, post_bp, comment_bp
+    app.register_blueprint(tag_bp, url_prefix='/tags')
+    app.register_blueprint(post_bp, url_prefix='/posts')
+    app.register_blueprint(comment_bp, url_prefix='/comments')
 
     return app

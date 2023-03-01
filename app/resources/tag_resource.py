@@ -1,3 +1,3 @@
 from flask import Blueprint, request
 
-user_bp = Blueprint("user", __name__)
+tag_bp = Blueprint("tag", __name__)
