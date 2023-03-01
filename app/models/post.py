@@ -19,3 +19,7 @@ class PostModel(db.Model):
     def __init__(self, title, text):
         self.title = title
         self.text = text
+
+    @classmethod
+    def find_by_title(cls, title):
+        return cls.query.filter_by(title=title).first()
