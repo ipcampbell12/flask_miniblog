@@ -15,3 +15,7 @@ class PostModel(db.Model):
         'CommentModel', back_populates='post', lazy="dynamic", cascade="all,celete")
     tags = db.Relationship(
         'TagModel', back_pouplates='post', secondary="posts_tags")
+
+    def __init__(self, title, text):
+        self.title = title
+        self.text = text

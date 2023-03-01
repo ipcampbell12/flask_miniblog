@@ -1,8 +1,9 @@
 from app import db
 from datetime import datetime
+from models import BaseModel
 
 
-class CommentModel(db.Model):
+class CommentModel(BaseModel):
     __tablename__ = 'comments'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -12,3 +13,6 @@ class CommentModel(db.Model):
         'posts.id'), unique=True, nullable=False)
     parent_comment_id = db.Column(db.Integer, db.ForeignKey(
         'comments.id'), unique=True, nullable=False)
+
+    def __init__(self, text):
+        self.text = text

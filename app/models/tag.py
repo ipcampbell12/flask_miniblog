@@ -9,3 +9,6 @@ class TagModel(db.Model):
 
     posts = db.Relationship(
         'PostModel', back_populates='tag', secondary="posts_tags")
+
+    def __init__(self, name):
+        self.name = name
