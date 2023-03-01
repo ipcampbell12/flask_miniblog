@@ -5,14 +5,14 @@ from flask_smorest import abort
 class BaseModel(db.Model):
     __abstract__ = True
 
-    def save(self):
+    def save_to_db(self):
         try:
             db.session.add(self)
             db.session.commit()
         except:
             abort(500, message=f"There was an error adding {self} ")
 
-    def delete(self):
+    def delete_from_db(self):
         try:
             db.session.delete(self)
             db.session.commit()

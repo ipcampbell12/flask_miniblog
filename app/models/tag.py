@@ -13,5 +13,6 @@ class TagModel(db.Model):
     def __init__(self, name):
         self.name = name
 
-    def find_by_name():
-        pass
+    @classmethod
+    def find_by_name(cls, name):
+        return cls.query.filter_by(name=name).first()
