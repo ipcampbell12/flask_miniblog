@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 
-from models import CommentModel, PostModel
+from ..models.comment import CommentModel
+from ..models.post import PostModel
 
 comment_bp = Blueprint("comment", __name__)
 

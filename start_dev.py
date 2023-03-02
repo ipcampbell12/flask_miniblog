@@ -1,7 +1,8 @@
 from app import create_app
-from config import Config
+from dotenv import load_dotenv
 
-app = create_app(Config)
+
+app = create_app()
 
 if __name__ == 'main':
     app.run(debug=True)

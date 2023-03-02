@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from models import PostModel
+from ..models.post import PostModel
 
 post_bp = Blueprint("post", __name__)
 

@@ -1,4 +1,3 @@
-from .comment import CommentModel
-from .post import PostModel
-from .tag import TagModel
-from .basemodel import BaseModel
+from ..models.comment import CommentModel
+from ..models.post import PostModel
+from ..models.tag import TagModel
