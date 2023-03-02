@@ -46,7 +46,7 @@ def delete_post(post_id):
 
 
 @post_bp.route('/search/posts/post_name', methods=["GET"])
-def delete_post(post_name):
+def get_posts_by_name(post_name):
     
     return PostModel.find_by_title(post_name)
 

@@ -68,6 +68,7 @@ def write_reply(data, comment_id):
     reply = CommentModel(**data)
 
     comment.comments.append(reply)
+    
 
 
 
