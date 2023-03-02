@@ -13,7 +13,7 @@ class CommentModel(BaseModel):
         'posts.id'), unique=True, nullable=False)
     parent_comment_id = db.Column(db.Integer, db.ForeignKey(
         'comments.id'), unique=True, nullable=False)
-    comments = db.Relationship(
+    comments = db.relationship(
         'CommentModel', back_populates='comment', lazy="dynamic", cascade="all,delete")
 
     def __init__(self, text):

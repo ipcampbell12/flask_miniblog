@@ -12,9 +12,9 @@ class PostModel(BaseModel):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    comments = db.Relationship(
+    comments = db.relationship(
         'CommentModel', back_populates='post', lazy="dynamic", cascade="all,delete")
-    tags = db.Relationship(
+    tags = db.relationship(
         'TagModel', back_populates='post', secondary="posts_tags")
 
     def __init__(self, title, text):

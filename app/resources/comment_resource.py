@@ -18,7 +18,7 @@ def write_comment(data, post_id):
     return comment
 
 
-@comment_bp.route('/<ind:comment_id>',methods=['PUT'])
+@comment_bp.route('/<int:comment_id>',methods=['PUT'])
 def update_comment(data, comment_id):
 
     comment = CommentModel.find_by_id(comment_id)
@@ -31,7 +31,7 @@ def update_comment(data, comment_id):
     return comment
 
 
-@comment_bp.route('/<ind:comment_id>',methods=['DELETE'])
+@comment_bp.route('/<int:comment_id>',methods=['DELETE'])
 def delete_comment(comment_id):
 
     CommentModel.delete_from_db(comment_id)
@@ -39,7 +39,7 @@ def delete_comment(comment_id):
     return {"Message":"Comment was deleted"}
 
 
-@comment_bp.route('/<ind:comment_id>',methods=['GET'])
+@comment_bp.route('/<int:comment_id>',methods=['GET'])
 def get_comment_by_id(comment_id):
 
     return CommentModel.find_by_id(comment_id)
@@ -52,7 +52,7 @@ def get_all_comments():
     return CommentModel.find_all()
 
 
-@comment_bp.route('/posts/<ind:post_id>/comments',methods=['GET'])
+@comment_bp.route('/posts/<int:post_id>/comments',methods=['GET'])
 def get_all_comments_for_a_post(post_id):
 
     comments = db.session.query(CommentModel).filter(CommentModel.post_id == post_id).all()

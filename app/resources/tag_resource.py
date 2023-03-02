@@ -6,7 +6,7 @@ from app import db
 tag_bp = Blueprint("tag", __name__)
 
 
-@tag_bp('/',methods=['POST'])
+@tag_bp.route('/',methods=['POST'])
 def create_tags(data):
 
     data =TagModel(**data)
@@ -14,7 +14,7 @@ def create_tags(data):
     data.save_to_db()
 
 
-@tag_bp('/<int:tag_id>/posts/<int:post_id>',methods=['POST'])
+@tag_bp.route('/<int:tag_id>/posts/<int:post_id>',methods=['POST'])
 def add_tag_to_post(tag_id, post_id):
 
     post = PostModel.find_by_id(post_id)
@@ -29,8 +29,8 @@ def add_tag_to_post(tag_id, post_id):
     except:
         abort(500, message="Sorry buddy")
 
-@tag_bp('/<int:tag_id>/posts/<int:post_id>',methods=['DELETE'])
-def add_tag_to_post(tag_id, post_id):
+@tag_bp.route('/<int:tag_id>/posts/<int:post_id>',methods=['DELETE'])
+def remove_tag_from_post(tag_id, post_id):
 
     post = PostModel.find_by_id(post_id)
 
@@ -45,7 +45,7 @@ def add_tag_to_post(tag_id, post_id):
         abort(500, message="Sorry buddy")
 
 
-@tag_bp('/search/tags/tag_name/posts',methods=['GET'])
+@tag_bp.route('/search/tags/tag_name/posts',methods=['GET'])
 def serach_for_posts_by_tagname(tag_name):
     
     posts = db.sesion.query(PostModel).filter_by(PostModel.tags.name == tag_name).all()

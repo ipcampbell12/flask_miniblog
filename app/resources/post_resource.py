@@ -5,9 +5,14 @@ post_bp = Blueprint("post", __name__)
 
 
 @post_bp.route('/', methods=["POST"])
-def create_post(data):
+def create_post():
 
-    post = PostModel(**data)
+    data =request.get_json()
+
+    post = PostModel(
+        data["title"],
+        data["text"],
+    )
 
     post.save_to_db()
 
@@ -15,7 +20,9 @@ def create_post(data):
 
 
 @post_bp.route('/<int:post_id>', methods=["PUT"])
-def update_post(data, post_id):
+def update_post(post_id):
+
+    data = request.get_json()
 
     post = PostModel.find_by_id(post_id)
 
