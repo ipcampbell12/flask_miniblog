@@ -10,14 +10,14 @@ class BaseModel(db.Model):
             db.session.add(self)
             db.session.commit()
         except:
-            abort(500, message=f"There was an error adding {self} ")
+            abort(500, f"There was an error saving {self} to the database")
 
     def delete_from_db(self):
         try:
             db.session.delete(self)
             db.session.commit()
         except:
-            abort(500, f"{self}could not be deleted")
+            abort(500, f"There was an error saving {self} to the database")
 
     @classmethod
     def find_by_id(cls, id):

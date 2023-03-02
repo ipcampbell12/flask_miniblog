@@ -1,8 +1,9 @@
 from app import db
+from models import BaseModel
 from datetime import datetime
 
 
-class PostModel(db.Model):
+class PostModel(BaseModel):
     __tablename__ = 'posts'
 
     id = db.Column(db.Integer, primary_key=True)
