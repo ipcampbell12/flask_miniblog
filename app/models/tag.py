@@ -1,7 +1,8 @@
+from app.models import BaseModel
 from app import db
 
 
-class TagModel(db.Model):
+class TagModel(BaseModel):
     __tablename__ = "tags"
 
     id = db.Column(db.Integer, primary_key=True)
