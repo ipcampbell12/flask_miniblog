@@ -1,5 +1,5 @@
 from app import db
-from models import BaseModel
+from .basemodel import BaseModel
 from datetime import datetime
 
 
@@ -13,9 +13,9 @@ class PostModel(BaseModel):
     updated_at = db.Column(
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     comments = db.Relationship(
-        'CommentModel', back_populates='post', lazy="dynamic", cascade="all,celete")
+        'CommentModel', back_populates='post', lazy="dynamic", cascade="all,delete")
     tags = db.Relationship(
-        'TagModel', back_pouplates='post', secondary="posts_tags")
+        'TagModel', back_populates='post', secondary="posts_tags")
 
     def __init__(self, title, text):
         self.title = title

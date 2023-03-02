@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from ..models.post import PostModel
+from app.models import PostModel
 
 post_bp = Blueprint("post", __name__)
 
@@ -14,7 +14,7 @@ def create_post(data):
     return post
 
 
-@post_bp.route('/posts/<ind:post_id>', methods=["PUT"])
+@post_bp.route('/posts/<int:post_id>', methods=["PUT"])
 def update_post(data, post_id):
 
     post = PostModel.find_by_id(post_id)
