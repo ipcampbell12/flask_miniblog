@@ -26,3 +26,13 @@ class BaseModel(db.Model):
     @classmethod
     def find_all(cls):
         return cls.query.all()
+
+    # def to_dict(self,data):
+    #     return {**data}
+    
+    # def to_dictionary(self):
+    #     return {**self} 
+    
+   
+
+

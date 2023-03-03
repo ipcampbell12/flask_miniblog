@@ -7,7 +7,7 @@ class PostModel(BaseModel):
     __tablename__ = 'posts'
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), nullable=False, primary_key=True)
+    title = db.Column(db.String(80), nullable=False)
     text = db.Column(db.String(200), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(
@@ -24,3 +24,10 @@ class PostModel(BaseModel):
     @classmethod
     def find_by_title(cls, title):
         return cls.query.filter_by(title=title).first()
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'text':self.text
+        }

@@ -1,5 +1,6 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from app.models import PostModel
+from app import db
 
 post_bp = Blueprint("post", __name__)
 
@@ -8,7 +9,7 @@ post_bp = Blueprint("post", __name__)
 def create_post():
 
     data =request.get_json()
-
+    print(data)
     post = PostModel(
         data["title"],
         data["text"],
@@ -16,7 +17,8 @@ def create_post():
 
     post.save_to_db()
 
-    return post
+    #must return simple python dictionary
+    return post.to_dict()
 
 
 @post_bp.route('/<int:post_id>', methods=["PUT"])
@@ -38,13 +40,18 @@ def update_post(post_id):
 @post_bp.route('/', methods=["GET"])
 def get_all_posts():
 
-    return PostModel.find_all()
-
+    posts = db.session.query(PostModel).all()
+    
+    # post_list = [jsonify(post) for post in posts]
+    return 
 
 @post_bp.route('/<int:post_id>', methods=["GET"])
 def get_post(post_id):
 
-    return PostModel.find_by_id(post_id)
+    post = PostModel.find_by_id(post_id).to_dict()
+    response = jsonify(post)
+
+    return response
 
 
 @post_bp.route('/<int:post_id>', methods=["DELETE"])
