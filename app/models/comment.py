@@ -1,6 +1,6 @@
 from app import db
 from datetime import datetime
-from ..models import BaseModel
+from app.models import BaseModel
 
 
 class CommentModel(BaseModel):

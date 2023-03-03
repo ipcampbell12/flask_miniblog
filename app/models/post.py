@@ -1,5 +1,5 @@
 from app import db
-from .basemodel import BaseModel
+from app.models import BaseModel
 from datetime import datetime
 
 
@@ -15,7 +15,7 @@ class PostModel(BaseModel):
     comments = db.relationship(
         'CommentModel', back_populates='post', lazy="dynamic", cascade="all,delete")
     tags = db.relationship(
-        'TagModel', back_populates='post', secondary="posts_tags")
+        'TagModel', back_populates='posts', secondary="posts_tags")
 
     def __init__(self, title, text):
         self.title = title
