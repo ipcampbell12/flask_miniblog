@@ -25,3 +25,5 @@ def create_app(config_class=Config):
     app.register_blueprint(comment_bp, url_prefix='/comments')
 
     return app
+
+from app import models
