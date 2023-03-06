@@ -23,7 +23,7 @@ class CommentModel(BaseModel):
 
     def to_dict(self):
         return {
+            "id":self.id,
             "text":self.text,
             "post_id":self.post_id
-
         }

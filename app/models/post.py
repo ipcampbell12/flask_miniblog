@@ -36,8 +36,16 @@ class PostModel(BaseModel):
             'text':self.text
         }
     
-    def to_collections_dict(self):
+    # def get_all_comments(self):
 
-        return jsonify([{"comment":comment.to_dict()} for comment in self.comments])
+    #     return jsonify([{"comment":comment.to_dict()} for comment in self.comments])
+    
+    # def to_collections_dict(self):
+    #      return {
+    #         'id': self.id,
+    #         'title': self.title,
+    #         'text':self.text,
+    #         'comments':self.get_all_comments()
+    #     }
            
 

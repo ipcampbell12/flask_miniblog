@@ -57,7 +57,7 @@ def get_post(post_id):
     # comment_list = [{'comment':comment.to_dict()} for comment in comments]
     
     print(post)
-    return post
+    return jsonify(post)
     # return jsonify(comment_list)
 
 

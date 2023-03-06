@@ -25,8 +25,9 @@ def write_comment():
 
 
 @comment_bp.route('/comments/<int:comment_id>',methods=['PUT'])
-def update_comment(data, comment_id):
+def update_comment(comment_id):
 
+    data = request.get_json()
     comment = CommentModel.find_by_id(comment_id)
 
     if comment: 
@@ -34,15 +35,19 @@ def update_comment(data, comment_id):
     else:
         comment = CommentModel(id=comment_id, **data)
     
-    return comment
+    comment.save_to_db()
+    
+    return comment.to_dict()
 
 
 @comment_bp.route('/comments/<int:comment_id>',methods=['DELETE'])
 def delete_comment(comment_id):
 
-    CommentModel.delete_from_db(comment_id)
+    comment = CommentModel.find_by_id(comment_id)
 
-    return {"Message":"Comment was deleted"}
+    comment.delete_from_db()
+
+    return {"Message":f"Comment with id {comment_id} was deleted"}
 
 #this works
 @comment_bp.route('/comments/<int:comment_id>',methods=['GET'])
@@ -57,9 +62,9 @@ def get_all_comments():
 
     comments =  CommentModel.find_all()
 
-    comment_list = [{"comment":comment.to_dict()} for comment in comments]
+    comment_list = jsonify([{"comment":comment.to_dict()} for comment in comments])
     
-    return jsonify(comment_list)
+    return comment_list
 
 #this works
 @comment_bp.route('/posts/<int:post_id>/comments',methods=['GET'])
