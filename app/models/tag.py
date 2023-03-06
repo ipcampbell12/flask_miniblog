@@ -16,3 +16,9 @@ class TagModel(BaseModel):
     @classmethod
     def find_by_name(cls, name):
         return cls.query.filter_by(name=name).first()
+
+    def to_dict(self):
+        return {
+            "id":self.id,
+            "name":self.name
+        }

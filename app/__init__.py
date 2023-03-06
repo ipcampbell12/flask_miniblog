@@ -16,7 +16,7 @@ def create_app(config_class=Config):
     migrate.init_app(app,db)
 
     from .resources.tag_resource import tag_bp
-    app.register_blueprint(tag_bp, url_prefix='/tags')
+    app.register_blueprint(tag_bp)
 
     from .resources.post_resource import post_bp
     app.register_blueprint(post_bp, url_prefix='/posts')

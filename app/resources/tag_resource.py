@@ -1,20 +1,27 @@
-from flask import Blueprint, request
-from app.models import TagModel, PostModel
+from flask import Blueprint, request, jsonify
+from app.models import TagModel, PostModel, posts_tags
 from flask_smorest import abort
 from app import db
 
 tag_bp = Blueprint("tag", __name__)
 
 
-@tag_bp.route('/',methods=['POST'])
-def create_tags(data):
+@tag_bp.route('/tags',methods=['POST'])
+def create_tags():
 
-    data =TagModel(**data)
+    
+    data = request.get_json()
+    
+    tag = TagModel(
+        data['name']
+    )
 
-    data.save_to_db()
+    tag.save_to_db()
+
+    return tag.to_dict()
 
 
-@tag_bp.route('/<int:tag_id>/posts/<int:post_id>',methods=['POST'])
+@tag_bp.route('/posts/<int:post_id>/tags/<int:tag_id>',methods=['POST'])
 def add_tag_to_post(tag_id, post_id):
 
     post = PostModel.find_by_id(post_id)
@@ -28,6 +35,9 @@ def add_tag_to_post(tag_id, post_id):
         db.session.commit()
     except:
         abort(500, message="Sorry buddy")
+    
+
+    return post.to_dict()
 
 @tag_bp.route('/<int:tag_id>/posts/<int:post_id>',methods=['DELETE'])
 def remove_tag_from_post(tag_id, post_id):
@@ -51,3 +61,21 @@ def serach_for_posts_by_tagname(tag_name):
     posts = db.sesion.query(PostModel).filter_by(PostModel.tags.name == tag_name).all()
 
     return posts
+
+@tag_bp.route('/tags',methods=['GET'])
+def get_all_tags():
+
+    tags = TagModel.find_all()
+
+    tag_list = jsonify([{"tag":tag.to_dict()} for tag in tags])
+
+    return tag_list
+
+@tag_bp.route('/posts/<int:post_id>/tags',methods=['GET'])
+def get_tags_by_post(post_id):
+
+    tags = db.session.query(TagModel, posts_tags).filter(TagModel.id == posts_tags.tag_id and posts_tags.post_id == post_id).all()
+
+    tag_list = jsonify([{"tag":tag.to_dict()} for tag in tags])
+
+    return tag_list
