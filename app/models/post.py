@@ -1,7 +1,7 @@
 from app import db
 from app.models import BaseModel
 from datetime import datetime
-from flask import jsonify
+from flask import jsonify, make_response
 
 
 class PostModel(BaseModel):
@@ -33,10 +33,11 @@ class PostModel(BaseModel):
         return {
             'id': self.id,
             'title': self.title,
-            'text':self.text,
-            'comments':self.to_collections_dict()
+            'text':self.text
         }
     
     def to_collections_dict(self):
 
-         return jsonify([{"comment":comment.to_dict()} for comment in self.comments])
+        return jsonify([{"comment":comment.to_dict()} for comment in self.comments])
+           
+
