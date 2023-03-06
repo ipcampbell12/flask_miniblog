@@ -1,6 +1,7 @@
 from app import db
 from app.models import BaseModel
 from datetime import datetime
+from flask import jsonify
 
 
 class PostModel(BaseModel):
@@ -13,7 +14,7 @@ class PostModel(BaseModel):
     updated_at = db.Column(
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     comments = db.relationship(
-        'CommentModel', back_populates='post', lazy="dynamic", cascade="all,delete")
+        'CommentModel', back_populates='post', cascade="all,delete", lazy='dynamic')
     tags = db.relationship(
         'TagModel', back_populates='posts', secondary="posts_tags")
 
@@ -24,10 +25,18 @@ class PostModel(BaseModel):
     @classmethod
     def find_by_title(cls, title):
         return cls.query.filter_by(title=title).first()
+    
+
+
 
     def to_dict(self):
         return {
             'id': self.id,
             'title': self.title,
-            'text':self.text
+            'text':self.text,
+            'comments':self.to_collections_dict()
         }
+    
+    def to_collections_dict(self):
+
+         return jsonify([{"comment":comment.to_dict()} for comment in self.comments])

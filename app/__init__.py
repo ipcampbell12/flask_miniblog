@@ -22,7 +22,7 @@ def create_app(config_class=Config):
     app.register_blueprint(post_bp, url_prefix='/posts')
 
     from .resources.comment_resource import comment_bp
-    app.register_blueprint(comment_bp, url_prefix='/comments')
+    app.register_blueprint(comment_bp)
 
     return app
 #have to import models - remove this and see if migration worked

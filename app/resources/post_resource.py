@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.models import PostModel
+from app.models import PostModel, CommentModel
 from app import db
 
 post_bp = Blueprint("post", __name__)
@@ -35,28 +35,43 @@ def update_post(post_id):
         post = PostModel(id=post_id, **data)
 
     post.save_to_db()
+    return post.to_dict()
 
 
 @post_bp.route('/', methods=["GET"])
 def get_all_posts():
 
-    posts = db.session.query(PostModel).all()
+    posts = PostModel.find_all()
     
-    # post_list = [jsonify(post) for post in posts]
-    return 
+    post_list = [{"post":post.to_dict()} for post in posts]
+    
+    return jsonify(post_list)
 
 @post_bp.route('/<int:post_id>', methods=["GET"])
 def get_post(post_id):
 
     post = PostModel.find_by_id(post_id).to_dict()
-    response = jsonify(post)
 
-    return response
+    # comments = db.session.query(CommentModel).filter(CommentModel.post_id == post_id).all()
+
+    # comment_list = [{'comment':comment.to_dict()} for comment in comments]
+    
+    print(post)
+    return jsonify(post)
+    # return jsonify(comment_list)
 
 
 @post_bp.route('/<int:post_id>', methods=["DELETE"])
 def delete_post(post_id):
-    PostModel.delete_from_db(post_id)
+    
+    post = PostModel.find_by_id(post_id)
+
+    #the delete_from_db function works on the post object itself, not just the id
+    post.delete_from_db()
+
+    return {"message":f"The post with id {post_id} has been deleted"}
+
+
 
 
 @post_bp.route('/search/posts/post_name', methods=["GET"])

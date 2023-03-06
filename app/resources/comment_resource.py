@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from app import db
 
 from app.models import CommentModel
@@ -7,15 +7,21 @@ from app.models import PostModel
 comment_bp = Blueprint("comment", __name__)
 
 
-@comment_bp.route('/posts/<int:id>/comments', methods=['POST'])
-def write_comment(data, post_id):
-    post = PostModel.find_by_id(post_id)
+@comment_bp.route('/comments', methods=['POST'])
+def write_comment():
+    
+    data = request.get_json()
+    
+    comment = CommentModel(
+        data['text'],
+        data['post_id'],
+    )
+    print(comment)
+    
+    comment.save_to_db()
+   
 
-    comment = CommentModel(**data)
-
-    post.comments.append(comment)
-
-    return comment
+    return comment.to_dict()
 
 
 @comment_bp.route('/<int:comment_id>',methods=['PUT'])
@@ -46,10 +52,14 @@ def get_comment_by_id(comment_id):
 
 
 
-@comment_bp.route('/',methods=['GET'])
+@comment_bp.route('/comments',methods=['GET'])
 def get_all_comments():
 
-    return CommentModel.find_all()
+    comments =  CommentModel.find_all()
+
+    comment_list = [{"comment":comment.to_dict()} for comment in comments]
+    
+    return jsonify(comment_list)
 
 
 @comment_bp.route('/posts/<int:post_id>/comments',methods=['GET'])
@@ -57,7 +67,9 @@ def get_all_comments_for_a_post(post_id):
 
     comments = db.session.query(CommentModel).filter(CommentModel.post_id == post_id).all()
 
-    return comments
+    comment_list = [{"comment":comment.to_dict()} for comment in comments]
+
+    return jsonify(comment_list)
 
 
 @comment_bp.route('/comments/comment_id', methods=['POST'])
