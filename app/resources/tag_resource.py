@@ -39,7 +39,7 @@ def add_tag_to_post(tag_id, post_id):
 
     return post.to_dict()
 
-@tag_bp.route('/<int:tag_id>/posts/<int:post_id>',methods=['DELETE'])
+@tag_bp.route('/posts/<int:post_id>/tags/<int:tag_id>',methods=['DELETE'])
 def remove_tag_from_post(tag_id, post_id):
 
     post = PostModel.find_by_id(post_id)
@@ -53,6 +53,8 @@ def remove_tag_from_post(tag_id, post_id):
         db.session.commit()
     except:
         abort(500, message="Sorry buddy")
+    
+    return {"message":f"The tag with id {tag_id} was removed from the post with id {post_id}"}
 
 
 @tag_bp.route('/search/tags/tag_name/posts',methods=['GET'])
@@ -74,8 +76,8 @@ def get_all_tags():
 @tag_bp.route('/posts/<int:post_id>/tags',methods=['GET'])
 def get_tags_by_post(post_id):
 
-    tags = db.session.query(TagModel, posts_tags).filter(TagModel.id == posts_tags.tag_id and posts_tags.post_id == post_id).all()
-
-    tag_list = jsonify([{"tag":tag.to_dict()} for tag in tags])
-
+    tags = db.session.query(TagModel, posts_tags).filter(TagModel.id == posts_tags.c.tag_id and posts_tags.c.post_id == post_id).all()
+    
+    tag_list = jsonify([{"tag":tag[0].to_dict()} for tag in tags])
+   
     return tag_list
