@@ -51,14 +51,10 @@ def get_all_posts():
 def get_post(post_id):
 
     post = PostModel.find_by_id(post_id).to_dict()
-
-    # comments = db.session.query(CommentModel).filter(CommentModel.post_id == post_id).all()
-
-    # comment_list = [{'comment':comment.to_dict()} for comment in comments]
     
     print(post)
     return jsonify(post)
-    # return jsonify(comment_list)
+
 
 
 @post_bp.route('/<int:post_id>', methods=["DELETE"])
@@ -74,8 +70,11 @@ def delete_post(post_id):
 
 
 
-@post_bp.route('/search/posts/post_name', methods=["GET"])
+@post_bp.route('/<string:post_name>', methods=["GET"])
 def get_posts_by_name(post_name):
     
-    return PostModel.find_by_title(post_name)
+    posts = db.session.query(PostModel).filter(PostModel.title.like(f'%{post_name}%')).all()
 
+    post_list = jsonify([{"posts":post.to_dict()} for post in posts])
+
+    return post_list

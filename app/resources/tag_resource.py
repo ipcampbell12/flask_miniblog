@@ -61,7 +61,7 @@ def remove_tag_from_post(tag_id, post_id):
 @tag_bp.route('/tags/<string:tag_name>/posts',methods=['GET'])
 def search_for_posts_by_tagname(tag_name):
     
-    posts = db.session.query(PostModel, posts_tags).filter(TagModel.name == tag_name).filter(TagModel.id == posts_tags.c.tag_id).filter(posts_tags.c.post_id == PostModel.id).all()
+    posts = db.session.query(PostModel, posts_tags).filter(TagModel.name.like(f"%{tag_name}%")).filter(TagModel.id == posts_tags.c.tag_id).filter(posts_tags.c.post_id == PostModel.id).all()
 
     post_list = jsonify([{"post":post[0].to_dict()} for post in posts])
 
