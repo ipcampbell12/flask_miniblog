@@ -27,8 +27,6 @@ class PostModel(BaseModel):
         return cls.query.filter_by(title=title).first()
     
 
-
-
     def to_dict(self):
         return {
             'id': self.id,
@@ -36,16 +34,22 @@ class PostModel(BaseModel):
             'text':self.text
         }
     
-    # def get_all_comments(self):
+    def get_all_comments(self):
 
-    #     return {{"comment":comment.to_dict()} for comment in self.comments}
+        return [comment.to_dict() for comment in self.comments]
+
+    def get_all_tags(self):
+
+        return [tag.to_dict() for tag in self.tags]
     
-    # def to_collections_dict(self):
-    #      return {
-    #         'id': self.id,
-    #         'title': self.title,
-    #         'text':self.text,
-    #         'comments':self.comments
-    #     }
+    def to_collections_dict(self):
+         return {
+            'id': self.id,
+            'title': self.title,
+            'text':self.text,
+            'comments':self.get_all_comments(),
+            'tags':self.get_all_tags(),
+            
+        }
            
 

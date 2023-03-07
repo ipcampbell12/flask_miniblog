@@ -72,7 +72,7 @@ def get_all_comments_for_a_post(post_id):
 
     comments = db.session.query(CommentModel).filter(CommentModel.post_id == post_id).all()
 
-    comment_list = jsonify([{"comment":comment.to_dict()} for comment in comments])
+    comment_list = jsonify([comment.to_dict() for comment in comments])
 
     return comment_list
 

@@ -43,16 +43,16 @@ def get_all_posts():
 
     posts = PostModel.find_all()
     
-    post_list = [{"post":post.to_dict()} for post in posts]
+    post_list = [post.to_collections_dict() for post in posts]
     
-    return jsonify(post_list)
+    print(post_list)
+    return jsonify({"posts":post_list})
 
 @post_bp.route('/<int:post_id>', methods=["GET"])
 def get_post(post_id):
 
-    post = PostModel.find_by_id(post_id).to_dict()
+    post = PostModel.find_by_id(post_id).to_collections_dict()
     
-    print(post)
     return jsonify(post)
 
 
@@ -75,6 +75,6 @@ def get_posts_by_name(post_name):
     
     posts = db.session.query(PostModel).filter(PostModel.title.like(f'%{post_name}%')).all()
 
-    post_list = jsonify([{"posts":post.to_dict()} for post in posts])
+    post_list = jsonify([{"posts":post.to_collections_dict()} for post in posts])
 
     return post_list
