@@ -39,7 +39,7 @@ def add_tag_to_post(tag_id, post_id):
 
     return post.to_dict()
 
-#this one does actually work
+
 @tag_bp.route('/posts/<int:post_id>/tags/<int:tag_id>',methods=['DELETE'])
 def remove_tag_from_post(tag_id, post_id):
 
@@ -86,11 +86,11 @@ def get_all_tags():
 
     return tag_list
 
-
+#this one works
 @tag_bp.route('/posts/<int:post_id>/tags',methods=['GET'])
 def get_tags_by_post(post_id):
 
-    tags = db.session.query(TagModel, posts_tags).filter(TagModel.id == posts_tags.c.tag_id and posts_tags.c.post_id == post_id).all()
+    tags = db.session.query(TagModel, posts_tags).filter(TagModel.id == posts_tags.c.tag_id).filter(posts_tags.c.post_id == post_id)
     
     tag_list = jsonify([{"tag":tag[0].to_dict()} for tag in tags])
    
