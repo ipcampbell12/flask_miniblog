@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app import db
-
+from flask_smorest import abort
 from app.models import CommentModel
 from app.models import PostModel
 
@@ -77,19 +77,26 @@ def get_all_comments_for_a_post(post_id):
     return comment_list
 
 
-@comment_bp.route('/replies', methods=['POST'])
-def write_reply():
+@comment_bp.route('/comments/<int:comment_id>', methods=['POST'])
+def write_reply(comment_id):
+
+    comment = CommentModel.find_by_id(comment_id)
 
     data = request.get_json()
 
     reply = CommentModel(
-        data['text'],
-        data['parent_comment_id']
+        data['text']
     )
 
-    reply.save_to_db()
+    comment.replies.append(reply)
 
-    return reply.to_collections_dict()
+    try: 
+        db.session.add(comment)
+        db.session.commit()
+    except:
+        abort(500, message="Sorry buddy")
+
+    return comment.to_collections_dict()
 
 
 
