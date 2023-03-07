@@ -5,7 +5,7 @@ from app import db
 
 tag_bp = Blueprint("tag", __name__)
 
-
+#this one works
 @tag_bp.route('/tags',methods=['POST'])
 def create_tags():
 
@@ -20,7 +20,7 @@ def create_tags():
 
     return tag.to_dict()
 
-
+#this one works
 @tag_bp.route('/posts/<int:post_id>/tags/<int:tag_id>',methods=['POST'])
 def add_tag_to_post(tag_id, post_id):
 
@@ -39,6 +39,7 @@ def add_tag_to_post(tag_id, post_id):
 
     return post.to_dict()
 
+#this one does actually work
 @tag_bp.route('/posts/<int:post_id>/tags/<int:tag_id>',methods=['DELETE'])
 def remove_tag_from_post(tag_id, post_id):
 
@@ -57,13 +58,25 @@ def remove_tag_from_post(tag_id, post_id):
     return {"message":f"The tag with id {tag_id} was removed from the post with id {post_id}"}
 
 
-@tag_bp.route('/search/tags/tag_name/posts',methods=['GET'])
-def serach_for_posts_by_tagname(tag_name):
+@tag_bp.route('/tags/<string:tag_name>/posts',methods=['GET'])
+def search_for_posts_by_tagname(tag_name):
     
-    posts = db.sesion.query(PostModel).filter_by(PostModel.tags.name == tag_name).all()
+    posts = db.session.query(PostModel, posts_tags, TagModel).filter(PostModel.id == posts_tags.c.post_id).filter(posts_tags.c.tag_id == TagModel.id).filter(TagModel.name == tag_name)
 
-    return posts
+    post_list = jsonify([{"post":post[0].to_dict()} for post in posts])
 
+    return post_list
+
+@tag_bp.route('/tags/<int:tag_id>/posts',methods=['GET'])
+def search_for_posts_by_tagid(tag_id):
+    
+    posts = db.session.query(PostModel, posts_tags, TagModel).filter(PostModel.id == posts_tags.c.post_id and posts_tags.c.tag_id == tag_id).all()
+
+    post_list = jsonify([{"post":post[0].to_dict()} for post in posts])
+
+    return post_list
+
+#this one works
 @tag_bp.route('/tags',methods=['GET'])
 def get_all_tags():
 
@@ -72,6 +85,7 @@ def get_all_tags():
     tag_list = jsonify([{"tag":tag.to_dict()} for tag in tags])
 
     return tag_list
+
 
 @tag_bp.route('/posts/<int:post_id>/tags',methods=['GET'])
 def get_tags_by_post(post_id):
