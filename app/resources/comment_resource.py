@@ -21,7 +21,7 @@ def write_comment():
     comment.save_to_db()
    
 
-    return comment.to_dict()
+    return comment.to_collections_dict()
 
 
 @comment_bp.route('/comments/<int:comment_id>',methods=['PUT'])
@@ -37,7 +37,7 @@ def update_comment(comment_id):
     
     comment.save_to_db()
     
-    return comment.to_dict()
+    return comment.to_collections_dict()
 
 
 @comment_bp.route('/comments/<int:comment_id>',methods=['DELETE'])
@@ -53,7 +53,7 @@ def delete_comment(comment_id):
 @comment_bp.route('/comments/<int:comment_id>',methods=['GET'])
 def get_comment_by_id(comment_id):
 
-    return CommentModel.find_by_id(comment_id).to_dict()
+    return CommentModel.find_by_id(comment_id).to_collections_dict()
 
 
 #this works
@@ -62,7 +62,7 @@ def get_all_comments():
 
     comments =  CommentModel.find_all()
 
-    comment_list = jsonify([{"comment":comment.to_dict()} for comment in comments])
+    comment_list = jsonify([{"comment":comment.to_collections_dict()} for comment in comments])
     
     return comment_list
 
@@ -72,19 +72,28 @@ def get_all_comments_for_a_post(post_id):
 
     comments = db.session.query(CommentModel).filter(CommentModel.post_id == post_id).all()
 
-    comment_list = jsonify([comment.to_dict() for comment in comments])
+    comment_list = jsonify([comment.to_collections_dict() for comment in comments])
 
     return comment_list
 
 
-@comment_bp.route('/comments/comment_id', methods=['POST'])
-def write_reply(data, comment_id):
+@comment_bp.route('/replies', methods=['POST'])
+def write_reply():
 
-    comment = CommentModel.find_by_id(comment_id)
+    data = request.get_json()
 
-    reply = CommentModel(**data)
+    reply = CommentModel(
+        data['text'],
+        data['parent_comment_id']
+    )
 
-    comment.comments.append(reply)
+    reply.save_to_db()
+
+    return reply.to_collections_dict()
+
+
+
+    
     
 
 

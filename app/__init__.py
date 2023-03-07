@@ -13,7 +13,7 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
 
     db.init_app(app)
-    migrate.init_app(app,db)
+    migrate.init_app(app,db,render_as_batch=True)
 
     from .resources.tag_resource import tag_bp
     app.register_blueprint(tag_bp)
