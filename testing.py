@@ -1,6 +1,8 @@
 import unittest
 from app import create_app, db
 from app.models import PostModel, CommentModel, TagModel
+from app.resources.tag_resource import search_for_posts_by_tagname
+import json
 
 
 class TestConfig():
@@ -13,6 +15,7 @@ class TestAllTheThings(unittest.TestCase):
         self.app = create_app(TestConfig)
         self.app_context = self.app.app_context()
         self.app_context.push()
+        self.client = self.app.test_client()
         db.create_all()
 
     def tearDown(self):
@@ -20,88 +23,105 @@ class TestAllTheThings(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    # @staticmethod
-    # def createPosts():
+    
+    def createPosts(self):
+        p1 = PostModel(title="Cool Title",text="Here some fun text")
+        p2 = PostModel(title="Lame Title",text="Here some lame text")
 
-    # @staticmethod
-    # def createComments():
+        posts = [p1, p2]
 
-    # @staticmethod
-    # def createTags():
+        for post in posts:
+            db.session.add(post)
+        
+        db.session.commit()
+
+        return posts
+
+    def createComments(self):
+        c1 = CommentModel(text="Your post is really cool", post_id=1)
+        c2 = CommentModel(text="Your post is really lame", post_id=2)
+
+        comments = [c1,c2]
+
+        for comment in comments: 
+            db.session.add(comment)
+
+        db.session.commit()
+
+        return comments
+
+    def createTags(self):
+        t1 = TagModel(name = "Cool")
+        t2 = TagModel(name = "Lame")
+
+        tags = [t1,t2]
+
+        for tag in tags: 
+            db.session.add(tag)
+        
+        db.session.commit()
+
+        return tags
 
     
     def testPosts(self):
-        p1 = PostModel(title="Cool Title",text="Here some fun text")
-        p2 = PostModel(title="Lame Title",text="Here some lame text")
-        db.session.add(p1)
-        db.session.add(p2)
-        db.session.commit()
-
-        self.assertEqual(p1.title, "Cool Title")
-        self.assertEqual(p2.title, "Lame Title")
-        self.assertEqual(p1.text, "Here some fun text")
-        self.assertEqual(p2.text, "Here some lame text")
+        
+        posts = self.createPosts()
+    
+        self.assertEqual(posts[0].title, "Cool Title")
+        self.assertEqual(posts[1].title, "Lame Title")
+        self.assertEqual(posts[0].text, "Here some fun text")
+        self.assertEqual(posts[1].text, "Here some lame text")
     
     def testComments(self):
-        p1 = PostModel(title="Cool Title",text="Here some fun text")
-        p2 = PostModel(title="Lame Title",text="Here some lame text")
-        db.session.add(p1)
-        db.session.add(p2)
-        db.session.commit()
+        posts = self.createPosts()
+        comments = self.createComments()
 
-        c1 = CommentModel(text="Your post is really cool", post_id=1)
-        c2 = CommentModel(text="Your post is really lame", post_id=2)
-        db.session.add(c1)
-        db.session.add(c2)
-        db.session.commit()
+        pc1 = posts[0].comments.all()
+        pc2 = posts[1].comments.all()
 
-        pc1 = p1.comments.all()
-        pc2 = p2.comments.all()
-
-        self.assertEqual(pc1, [c1])
-        self.assertEqual(pc2, [c2])
+        self.assertEqual(pc1, [comments[0]])
+        self.assertEqual(pc2, [comments[1]])
     
     def testTags(self):
-        t1 = TagModel(name = "Cool")
-        t2 = TagModel(name = "Lame")
-        db.session.add(t1)
-        db.session.add(t2)
-        db.session.commit()
+        
+        tags = self.createTags()
 
-        self.assertEqual(t1.name, "Cool")
-        self.assertEqual(t2.name, "Lame")
+        self.assertEqual(tags[0].name, "Cool")
+        self.assertEqual(tags[1].name, "Lame")
     
     #need to start function mae with "test"
     def testTaggingPosts(self):
-        p1 = PostModel(title="Cool Title",text="Here some fun text")
-        p2 = PostModel(title="Lame Title",text="Here some lame text")
-        db.session.add(p1)
-        db.session.add(p2)
-        db.session.commit()
+        posts = self.createPosts()
+        tags = self.createTags()
 
-        t1 = TagModel(name = "Cool")
-        t2 = TagModel(name = "Lame")
-        db.session.add(t1)
-        db.session.add(t2)
-        db.session.commit()
-
-        #need to append tags to posts first
-        p1.tags.append(t1)
-        p2.tags.append(t2)
-        p1.tags.append(t2)
-        p2.tags.append(t1)
-
-        db.session.add(p1)
-        db.session.add(p2)
-        db.session.commit()
+        posts[0].tags.append(tags[0])
+        posts[0].tags.append(tags[1])
+        posts[1].tags.append(tags[1])
 
         #works if you remove .all(),  maybe because it uses many to man association table??
-        pt1 = p1.tags
-        pt2 = p2.tags
+        pt1 = posts[0].tags
+        pt2 = posts[1].tags
 
-        self.assertEqual(pt1, [t1,t2])
-        self.assertEqual(pt2, [t2,t1])
+        self.assertEqual(pt1, [tags[0],tags[1]])
+        self.assertEqual(pt2, [tags[1]])
     
+    def testGetPostByTag(self):
+        posts = self.createPosts()
+        tags = self.createTags()
+
+        posts[0].tags.append(tags[0])
+        posts[0].tags.append(tags[1])
+        posts[1].tags.append(tags[1])
+
+        # response = self.client.get('/tags/<string:tag_name>/posts', data={"tag_name":"cool"})
+
+        found_posts = search_for_posts_by_tagname(tags[0].name).data[0:-1]
+
+        self.assertEqual(found_posts,posts[0].to_dict()["title"])
+
+
+
     
         
 

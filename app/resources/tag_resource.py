@@ -3,6 +3,7 @@ from app.models import TagModel, PostModel, posts_tags
 from flask_smorest import abort
 from app import db
 
+
 tag_bp = Blueprint("tag", __name__)
 
 #this one works
