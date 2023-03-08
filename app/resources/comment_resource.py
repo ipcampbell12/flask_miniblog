@@ -61,7 +61,7 @@ def get_comment_by_id(comment_id):
 def get_all_comments():
 
     comments =  CommentModel.find_all()
-
+    
     comment_list = jsonify([{"comment":comment.to_collections_dict()} for comment in comments])
     
     return comment_list
@@ -72,12 +72,12 @@ def get_all_comments_for_a_post(post_id):
 
     comments = db.session.query(CommentModel).filter(CommentModel.post_id == post_id).all()
 
-    comment_list = jsonify([comment.to_collections_dict() for comment in comments])
+    comment_list = jsonify([comment.to_collections_dict(post_id) for comment in comments])
 
     return comment_list
 
 
-@comment_bp.route('/comments/<int:comment_id>', methods=['POST'])
+@comment_bp.route('/replies/<int:comment_id>', methods=['POST'])
 def write_reply(comment_id):
 
     comment = CommentModel.find_by_id(comment_id)
@@ -85,7 +85,10 @@ def write_reply(comment_id):
     data = request.get_json()
 
     reply = CommentModel(
-        data['text']
+        data['text'],
+        data['post_id'],
+        data["parent_comment_id"],
+
     )
 
     comment.replies.append(reply)
