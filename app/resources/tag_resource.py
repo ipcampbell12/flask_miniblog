@@ -27,18 +27,24 @@ def add_tag_to_post(tag_id, post_id):
 
     post = PostModel.find_by_id(post_id)
 
-    tag = TagModel.find_by_id(tag_id)
+    if post:
 
-    post.tags.append(tag)
+        tag = TagModel.find_by_id(tag_id)
+
+        post.tags.append(tag)
+        
+        try: 
+            db.session.add(post)
+            db.session.commit()
+        except:
+            abort(500, message="Sorry buddy")
+        
+
+        return post.to_dict()
     
-    try: 
-        db.session.add(post)
-        db.session.commit()
-    except:
-        abort(500, message="Sorry buddy")
     
 
-    return post.to_dict()
+    return {"Message":f"There is no post with id of {post_id} so you couldn't add any tags to it"}
 
 #this one works
 @tag_bp.route('/posts/<int:post_id>/tags/<int:tag_id>',methods=['DELETE'])
@@ -62,11 +68,15 @@ def remove_tag_from_post(tag_id, post_id):
 @tag_bp.route('/tags/<string:tag_name>/posts',methods=['GET'])
 def search_for_posts_by_tagname(tag_name):
     
-    posts = db.session.query(PostModel, posts_tags).filter(TagModel.name.like(f"%{tag_name}%")).filter(TagModel.id == posts_tags.c.tag_id).filter(posts_tags.c.post_id == PostModel.id).all()
+    posts = db.session.query(PostModel, posts_tags).filter(TagModel.name.ilike(f"%{tag_name}%")).filter(TagModel.id == posts_tags.c.tag_id).filter(posts_tags.c.post_id == PostModel.id).all()
 
-    post_list = jsonify([{"post":post[0].to_dict()} for post in posts])
+    if posts:
 
-    return post_list
+        post_list = jsonify([{"post":post[0].to_dict()} for post in posts])
+
+        return post_list
+    
+    return {"message":f"Couldn't find any posts with tags of {tag_name}"}
 
 #this one works
 @tag_bp.route('/tags/<int:tag_id>/posts',methods=['GET'])
@@ -74,9 +84,14 @@ def search_for_posts_by_tagid(tag_id):
     
     posts = db.session.query(PostModel, posts_tags).filter(PostModel.id == posts_tags.c.post_id).filter(posts_tags.c.tag_id == tag_id)
 
-    post_list = jsonify([{"post":post[0].to_dict()} for post in posts])
+    if posts:
 
-    return post_list
+        post_list = jsonify([{"post":post[0].to_dict()} for post in posts])
+
+        return post_list
+    
+    
+    return {"message":f"Couldn't find any posts with tags that have an id of {tag_id}"}
 
 #this one works
 @tag_bp.route('/tags',methods=['GET'])
@@ -84,16 +99,24 @@ def get_all_tags():
 
     tags = TagModel.find_all()
 
-    tag_list = jsonify([{"tag":tag.to_dict()} for tag in tags])
+    if tags:
+        tag_list = jsonify([{"tag":tag.to_dict()} for tag in tags])
 
-    return tag_list
+        return tag_list
+    
+    return {"Message":"There are no tags to return"}
 
 #this one works
 @tag_bp.route('/posts/<int:post_id>/tags',methods=['GET'])
 def get_tags_by_post(post_id):
 
-    tags = db.session.query(TagModel, posts_tags).filter(TagModel.id == posts_tags.c.tag_id).filter(posts_tags.c.post_id == post_id)
+    tags = db.session.query(TagModel, posts_tags).filter(TagModel.id == posts_tags.c.tag_id).filter(posts_tags.c.post_id == post_id).all()
     
-    tag_list = jsonify([{"tag":tag[0].to_dict()} for tag in tags])
-   
-    return tag_list
+
+    if tags:
+        tag_list = jsonify([{"tag":tag[0].to_dict()} for tag in tags])
+    
+        return tag_list
+    
+    
+    return {"message":f"Couldn't find any tags associated with post {post_id}"}

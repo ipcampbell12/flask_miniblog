@@ -42,18 +42,24 @@ def update_post(post_id):
 def get_all_posts():
 
     posts = PostModel.find_all()
+
+    if posts:
+        post_list = [post.to_collections_dict() for post in posts]
+        return jsonify({"posts":post_list})
     
-    post_list = [post.to_collections_dict() for post in posts]
-    
-    print(post_list)
-    return jsonify({"posts":post_list})
+    return {"Message":"There are no posts to return"}
 
 @post_bp.route('/<int:post_id>', methods=["GET"])
 def get_post(post_id):
 
-    post = PostModel.find_by_id(post_id).to_collections_dict()
+    post = PostModel.find_by_id(post_id)
+
+
+    if post:
+        post_to_return = post.to_collections_dict()
+        return jsonify(post_to_return)
     
-    return jsonify(post)
+    return {"Message":f"There is no post with id of {post_id}"}
 
 
 
@@ -62,19 +68,26 @@ def delete_post(post_id):
     
     post = PostModel.find_by_id(post_id)
 
-    #the delete_from_db function works on the post object itself, not just the id
-    post.delete_from_db()
 
-    return {"message":f"The post with id {post_id} has been deleted"}
+    if post:
+    #the delete_from_db function works on the post object itself, not just the id
+        post.delete_from_db()
+
+        return {"message":f"The post with id {post_id} has been deleted"}
+    
+    
+    return {"message":f"There was no post with an id of {post_id} to delete"}
 
 
 
 
 @post_bp.route('/<string:post_name>', methods=["GET"])
 def get_posts_by_name(post_name):
+
+    posts = db.session.query(PostModel).filter(PostModel.title.ilike(f'%{post_name}%')).all()
     
-    posts = db.session.query(PostModel).filter(PostModel.title.like(f'%{post_name}%')).all()
-
-    post_list = jsonify([{"posts":post.to_collections_dict()} for post in posts])
-
-    return post_list
+    if posts:
+        post_list = jsonify([{"posts":post.to_collections_dict()} for post in posts])
+        return post_list
+    
+    return {"Message":f"There are no posts containing the keyword '{post_name}'"}

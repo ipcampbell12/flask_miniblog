@@ -28,7 +28,8 @@ class CommentModel(BaseModel):
         return {
             "id":self.id,
             "text":self.text,
-            "post_id":self.post_id
+            "post_id":self.post_id,
+            "parent_commment_id":self.parent_comment_id
         }
     
     def get_all_replies(self):
@@ -40,7 +41,7 @@ class CommentModel(BaseModel):
             "id":self.id,
             "text":self.text,
             "post_id":self.post_id,
-            "post_title":PostModel.find_by_id(post_id).title,
+            # "post_title":PostModel.find_by_id(post_id).title,
             'replies':self.get_all_replies()
         }
     

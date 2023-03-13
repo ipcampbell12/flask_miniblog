@@ -1,9 +1,10 @@
 import unittest
+# import flask_unittest
 from app import create_app, db
 from app.models import PostModel, CommentModel, TagModel
 from app.resources.tag_resource import search_for_posts_by_tagname
 import json
-
+from flask import jsonify
 
 class TestConfig():
     TESTING = True
@@ -11,6 +12,8 @@ class TestConfig():
 
 
 class TestAllTheThings(unittest.TestCase):
+    # app = create_app()
+
     def setUp(self):
         self.app = create_app(TestConfig)
         self.app_context = self.app.app_context()
@@ -114,12 +117,26 @@ class TestAllTheThings(unittest.TestCase):
         posts[0].tags.append(tags[1])
         posts[1].tags.append(tags[1])
 
-        # response = self.client.get('/tags/<string:tag_name>/posts', data={"tag_name":"cool"})
+        tester = self.app.test_client(self)
 
-        found_posts = search_for_posts_by_tagname(tags[0].name).data[0:-1]
+        tag_name = tags[0].name
 
-        self.assertEqual(found_posts,posts[0].to_dict()["title"])
+        response = tester.get(f'/tags/{tag_name}/posts', content_type="application/json")
 
+        self.assertEqual(response.get_json(), [{'post':posts[0].to_dict()}])
+
+    def testGetPostByName(self):
+        posts = self.createPosts()
+
+        tester = self.app.test_client(self)
+
+        search = "title"
+
+        response = tester.get(f'/posts/{search}', content_type="application/json")
+
+        #should return the same thing your route would return
+
+        self.assertEqual(response.get_json(), [{"posts":post.to_collections_dict()} for post in posts])
 
 
     
